@@ -1,16 +1,114 @@
-# React + Vite
+# 🎧 Hyperint Assignment — Smart Product UI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React-based product interface showcasing a premium headphone experience with multiple review UI variations, animations, and clean component architecture.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Live Demo
 
-## React Compiler
+👉 *(Add your deployed link after Vercel deploy)*
+https://hyperint-assignment-coral.vercel.app/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🛍️ Product UI
+
+* Interactive product hero section
+* Image switching gallery
+* Pricing and discount display
+* Buy Now / Add to Cart UI
+* Delivery & warranty indicators
+
+---
+
+### ⭐ Review System (Core Highlight)
+
+Includes multiple review UI variations:
+
+* Classic
+* Joyful
+* Inspired
+* Story
+* Smart Filter
+* Premium Showcase
+
+👉 Controlled via `ReviewSwitcher.jsx`
+
+---
+
+### 📊 Social Proof
+
+* Average rating display
+* Customer count
+* Recommendation percentage
+* Metrics (sound, comfort, build, value)
+
+---
+
+### 🎨 UI/UX
+
+* Framer Motion animations
+* Clean typography (Poppins + Inter)
+* Responsive layout
+* Component-based structure
+
+---
+
+## 🧠 Tech Stack
+
+* React (Vite)
+* Tailwind CSS
+* Framer Motion
+
+---
+
+## 📁 Project Structure
+
+```bash id="struct-final"
+src/
+├── assets/                # Images
+├── components/
+│   ├── layout/            # Navbar, Footer
+│   ├── product/           # Product UI sections
+│   │   ├── ProductHero.jsx
+│   │   ├── ProductDetails.jsx
+│   │   └── SocialProof.jsx
+│   │
+│   └── reviews/           # Review system
+│       ├── variations/
+│       │   ├── ReviewClassic.jsx
+│       │   ├── ReviewInspired.jsx
+│       │   ├── ReviewJoyful.jsx
+│       │   ├── ReviewShowcase.jsx
+│       │   ├── ReviewSmartFilter.jsx
+│       │   └── ReviewStory.jsx
+│       │
+│       └── ReviewSwitcher.jsx
+│
+├── data/
+│   └── reviews.js         # Static review data
+│
+├── App.jsx
+├── main.jsx
+└── index.css
+```
+
+---
+
+## ⚙️ Setup
+
+```bash id="setup-final"
+git clone https://github.com/dhruvmayank9120/Hyperint-Assignment.git
+cd Hyperint-Assignment
+npm install
+npm run dev
+```
+
+---
+
+## 👨‍💻 Author
+
+Dhruv Mayank
+GitHub: https://github.com/dhruvmayank9120
