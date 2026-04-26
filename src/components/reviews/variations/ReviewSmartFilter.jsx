@@ -1,300 +1,320 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { reviews, overallStats } from "../../../data/reviews";
 
-/* METRIC CELL */
-const MetricCell = ({ label, value }) => (
+/* FILTER + SORT */
+const FILTERS = [
+  "All",
+  "Sound Quality",
+  "ANC",
+  "Comfort",
+  "Studio Grade",
+  "Voice Clarity",
+  "Value",
+  "Build Quality",
+];
+
+const SORTS = ["Top Rated", "Most Liked", "Newest"];
+
+/* DEFAULT COMMENTS (ALL TABS COVERED) */
+const DEFAULT_COMMENTS = {
+  All: [
+    {
+      id: 1,
+      name: "User A",
+      body: "Great overall experience.",
+      score: 8,
+      likes: 10,
+    },
+    {
+      id: 2,
+      name: "User B",
+      body: "Balanced and reliable.",
+      score: 9,
+      likes: 12,
+    },
+  ],
+  "Sound Quality": [
+    {
+      id: 3,
+      name: "Audiophile",
+      body: "Amazing bass and clarity.",
+      score: 9,
+      likes: 14,
+    },
+    {
+      id: 4,
+      name: "Listener",
+      body: "Very immersive sound.",
+      score: 8,
+      likes: 10,
+    },
+  ],
+  ANC: [
+    {
+      id: 5,
+      name: "Traveler",
+      body: "Noise cancellation works great.",
+      score: 9,
+      likes: 13,
+    },
+    {
+      id: 6,
+      name: "Commuter",
+      body: "Perfect for daily travel.",
+      score: 8,
+      likes: 9,
+    },
+  ],
+  Comfort: [
+    {
+      id: 7,
+      name: "Student",
+      body: "Super comfortable for long use.",
+      score: 9,
+      likes: 15,
+    },
+    {
+      id: 8,
+      name: "Designer",
+      body: "Soft and lightweight.",
+      score: 8,
+      likes: 10,
+    },
+  ],
+  "Studio Grade": [
+    { id: 9, name: "Editor", body: "Accurate for mixing.", score: 8, likes: 7 },
+    {
+      id: 10,
+      name: "Producer",
+      body: "Reliable for studio work.",
+      score: 9,
+      likes: 12,
+    },
+  ],
+  "Voice Clarity": [
+    {
+      id: 11,
+      name: "Manager",
+      body: "Great for meetings.",
+      score: 8,
+      likes: 9,
+    },
+    {
+      id: 12,
+      name: "Developer",
+      body: "Clear mic quality.",
+      score: 9,
+      likes: 11,
+    },
+  ],
+  Value: [
+    { id: 13, name: "Buyer", body: "Worth every rupee.", score: 9, likes: 16 },
+    {
+      id: 14,
+      name: "Shopper",
+      body: "Good value for money.",
+      score: 8,
+      likes: 10,
+    },
+  ],
+  "Build Quality": [
+    {
+      id: 15,
+      name: "Engineer",
+      body: "Feels solid and premium.",
+      score: 9,
+      likes: 14,
+    },
+    {
+      id: 16,
+      name: "User",
+      body: "Durable and well-built.",
+      score: 8,
+      likes: 9,
+    },
+  ],
+};
+
+/* 🔥 NEW COLORS */
+const PRIMARY = "#f97316"; // orange
+const SECONDARY = "#ec4899"; // pink
+const BG = "#fff7f3"; // slight warm bg
+const CARD = "#ffffff";
+const BORDER = "#fde2d5";
+const TEXT = "#1f2937";
+const MUTED = "#6b7280";
+
+/* CARD */
+const ReviewCard = ({ review }) => (
   <div
-    className="text-center"
-    style={{ borderRight: "2px solid #1a1a1a", padding: "16px 12px" }}
+    className="p-6 rounded-xl border shadow-sm hover:shadow-lg transition relative overflow-hidden"
+    style={{ background: CARD, borderColor: BORDER }}
   >
-    <p
+    {/* gradient strip */}
+    <div
       style={{
-        fontFamily: "Poppins, sans-serif",
-        fontWeight: 700,
-        fontSize: "30px",
-        letterSpacing: "-0.025em",
-        color: "#1a1a1a",
+        height: "4px",
+        background: `linear-gradient(to right, ${PRIMARY}, ${SECONDARY})`,
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
       }}
+    />
+
+    <div className="flex justify-between mb-3">
+      <div>
+        <p style={{ fontFamily: "Poppins", fontWeight: 600, color: TEXT }}>
+          {review.name}
+        </p>
+        <p style={{ fontSize: "12px", color: MUTED }}>
+          {review.role || "User"}
+        </p>
+      </div>
+
+      <span style={{ color: PRIMARY, fontWeight: 600 }}>{review.score}/10</span>
+    </div>
+
+    <p style={{ fontFamily: "Inter", color: "#374151" }}>{review.body}</p>
+
+    <div
+      className="mt-3 text-sm flex items-center gap-1"
+      style={{ color: SECONDARY }}
     >
-      {value}
-    </p>
-    <p
-      style={{
-        fontFamily: "Inter, sans-serif",
-        fontSize: "11px",
-        color: "#6b7280",
-        letterSpacing: "0.08em",
-      }}
-    >
-      {label}
-    </p>
+      ❤️ {review.likes}
+    </div>
   </div>
 );
 
-/* CARD */
-const StoryCard = ({ review, index, visible, updateImage }) => {
-  const [hovered, setHovered] = useState(false);
-  const [showImage, setShowImage] = useState(false);
-  const isOrange = index % 3 === 0;
-
-  return (
-    <>
-      <div
-        className="relative"
-        style={{
-          borderRight: "2px solid #1a1a1a",
-          borderBottom: "2px solid #1a1a1a",
-          opacity: visible ? 1 : 0,
-          transform: visible ? "none" : "translateY(20px)",
-          transition: `all 0.5s ${index * 70}ms`,
-          background: hovered
-            ? isOrange
-              ? "#d4400a"
-              : "#1a1a1a"
-            : "transparent",
-          cursor: "pointer",
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="p-5 md:p-6 space-y-3">
-          {/* IMAGE */}
-          <img
-            src={review.image}
-            alt={review.name}
-            onClick={() => setShowImage(true)}
-            className="w-full h-28 object-contain bg-[#f2ede4] p-2 rounded cursor-pointer hover:scale-105 transition"
-          />
-
-          {/* UPLOAD */}
-          <input
-            type="file"
-            accept="image/*"
-            className="text-xs"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                const url = URL.createObjectURL(file);
-                updateImage(review.id, url);
-              }
-            }}
-          />
-
-          {/* SCORE */}
-          <div className="flex items-baseline gap-2">
-            <span
-              style={{
-                fontFamily: "Poppins, sans-serif",
-                fontWeight: 700,
-                fontSize: "52px",
-                letterSpacing: "-0.025em",
-                color: hovered ? "#f2ede4" : isOrange ? "#d4400a" : "#1a1a1a",
-              }}
-            >
-              {review.score}
-            </span>
-            <span
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "12px",
-                color: hovered ? "#f2ede4aa" : "#888",
-              }}
-            >
-              /10
-            </span>
-          </div>
-
-          {/* USER */}
-          <p
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "13px",
-              color: hovered ? "#f2ede4aa" : "#6b7280",
-            }}
-          >
-            {review.handle || review.name} · {(review.role || "").toUpperCase()}
-          </p>
-
-          {/* TEXT */}
-          <p
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "15px",
-              lineHeight: 1.75,
-              color: hovered ? "#f2ede4" : "#374151",
-            }}
-          >
-            "{review.body?.slice(0, 120) || "Amazing product!"}..."
-          </p>
-
-          {/* EXTRA */}
-          <p
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "12px",
-              color: hovered ? "#f2ede4aa" : "#6b7280",
-            }}
-          >
-            🎧 Daily use • 2 weeks • Verified listener
-          </p>
-
-          {/* METRICS */}
-          <div className="flex gap-2 text-[10px]">
-            {Object.entries(review.metrics || {})
-              .slice(0, 2)
-              .map(([k, v]) => (
-                <span
-                  key={k}
-                  style={{
-                    fontFamily: "Inter, sans-serif",
-                    border: `1px solid ${hovered ? "#f2ede444" : "#1a1a1a"}`,
-                    padding: "2px 6px",
-                    color: hovered ? "#f2ede4" : "#1a1a1a",
-                  }}
-                >
-                  {k}: {v}
-                </span>
-              ))}
-          </div>
-
-          {/* TAG */}
-          <span
-            style={{
-              display: "inline-block",
-              padding: "5px 12px",
-              border: `1px solid ${hovered ? "#f2ede444" : "#1a1a1a"}`,
-              fontFamily: "Poppins, sans-serif",
-              fontSize: "10px",
-              letterSpacing: "0.08em",
-              fontWeight: 500,
-              color: hovered ? "#f2ede4" : "#1a1a1a",
-            }}
-          >
-            {review.tag?.toUpperCase()}
-          </span>
-
-          {/* LIKES */}
-          <div
-            className="absolute top-4 right-4"
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "12px",
-              color: hovered ? "#f2ede4aa" : "#9ca3af",
-            }}
-          >
-            ♥ {review.likes}
-          </div>
-        </div>
-      </div>
-
-      {/* IMAGE MODAL */}
-      {showImage && (
-        <div
-          onClick={() => setShowImage(false)}
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-        >
-          <img
-            src={review.image}
-            className="max-w-[80%] max-h-[80%] rounded-xl shadow-lg"
-          />
-        </div>
-      )}
-    </>
-  );
-};
-
 /* MAIN */
-export default function ReviewStory() {
-  const [visible, setVisible] = useState(false);
-  const [localReviews, setLocalReviews] = useState(() => {
-    const saved = localStorage.getItem("reviews");
-    return saved ? JSON.parse(saved) : reviews;
+export default function ReviewSmartFilter() {
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeSort, setActiveSort] = useState("Top Rated");
+  const [comments, setComments] = useState({});
+  const [input, setInput] = useState("");
+
+  const handleAddComment = () => {
+    if (!input.trim()) return;
+
+    const newComment = {
+      id: Date.now(),
+      name: "You",
+      body: input,
+      score: 8,
+      likes: 0,
+    };
+
+    setComments((prev) => ({
+      ...prev,
+      [activeFilter]: [...(prev[activeFilter] || []), newComment],
+    }));
+
+    setInput("");
+  };
+
+  let filtered = reviews.filter(
+    (r) => activeFilter === "All" || r.tag === activeFilter,
+  );
+
+  filtered = filtered.sort((a, b) => {
+    if (activeSort === "Top Rated") return b.score - a.score;
+    if (activeSort === "Most Liked") return b.likes - a.likes;
+    return b.id - a.id;
   });
 
-  const ref = useRef(null);
+  const fallback = DEFAULT_COMMENTS[activeFilter] || DEFAULT_COMMENTS["All"];
 
-  useEffect(() => {
-    localStorage.setItem("reviews", JSON.stringify(localReviews));
-  }, [localReviews]);
-
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) setVisible(true);
-    });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-
-  const updateImage = (id, newImg) => {
-    setLocalReviews((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, image: newImg } : item)),
-    );
-  };
+  const displayData =
+    filtered.length > 0
+      ? [...filtered, ...(comments[activeFilter] || [])]
+      : [...fallback, ...(comments[activeFilter] || [])];
 
   return (
     <section
-      ref={ref}
-      style={{ background: "#f2ede4", fontFamily: "Inter, sans-serif" }}
+      className="py-20 px-6"
+      style={{ background: BG, fontFamily: "Inter" }}
     >
-      <div style={{ border: "3px solid #1a1a1a" }}>
-        {/* TOP BAR */}
-        <div className="flex justify-between px-6 py-3 bg-black text-white text-xs">
-          <span>CUSTOMER REVIEWS</span>
-          <span>{overallStats.total.toLocaleString()} VERIFIED</span>
-        </div>
+      {/* HEADER */}
+      <div className="flex justify-between mb-10">
+        <h2 style={{ fontSize: "40px", fontFamily: "Poppins", color: PRIMARY }}>
+          Signal Reviews
+        </h2>
 
-        {/* HEADER */}
-        <div className="grid md:grid-cols-2 p-8 items-center border-b-2 border-black">
-          <h2
-            className="text-6xl"
+        <span
+          style={{ fontSize: "40px", fontFamily: "Poppins", color: PRIMARY }}
+        >
+          {overallStats.average}
+        </span>
+      </div>
+
+      {/* FILTER */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        {FILTERS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setActiveFilter(f)}
+            className="px-5 py-2 rounded-full text-sm transition hover:scale-105"
             style={{
-              fontFamily: "Poppins, sans-serif",
-              fontWeight: 700,
-              letterSpacing: "-0.035em",
+              background:
+                activeFilter === f
+                  ? `linear-gradient(to right, ${PRIMARY}, ${SECONDARY})`
+                  : "#fff",
+              color: activeFilter === f ? "#fff" : "#374151",
+              border: "1px solid #fde2d5",
             }}
           >
-            WHAT THEY SAID
-          </h2>
+            {f}
+          </button>
+        ))}
+      </div>
 
-          <div className="text-right">
-            <p
-              className="text-5xl"
-              style={{
-                fontFamily: "Poppins, sans-serif",
-                fontWeight: 700,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {overallStats.average}
-            </p>
-            <p className="text-sm text-gray-600">out of 10</p>
-          </div>
-        </div>
+      {/* SORT */}
+      <div className="flex gap-3 mb-8">
+        {SORTS.map((s) => (
+          <button
+            key={s}
+            onClick={() => setActiveSort(s)}
+            className="px-4 py-2 rounded-lg text-sm transition hover:scale-105"
+            style={{
+              background:
+                activeSort === s
+                  ? `linear-gradient(to right, ${SECONDARY}, ${PRIMARY})`
+                  : "#fff",
+              color: activeSort === s ? "#fff" : "#374151",
+              border: "1px solid #fde2d5",
+            }}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
 
-        {/* CARDS */}
-        <div className="grid md:grid-cols-3">
-          {localReviews.map((r, i) => (
-            <StoryCard
-              key={r.id}
-              review={r}
-              index={i}
-              visible={visible}
-              updateImage={updateImage}
-            />
-          ))}
-        </div>
+      {/* CARDS */}
+      <div className="grid md:grid-cols-3 gap-6">
+        {displayData.map((item) => (
+          <ReviewCard key={item.id} review={item} />
+        ))}
+      </div>
 
-        {/* METRICS */}
-        <div className="grid grid-cols-2 md:grid-cols-5 border-t-2 border-black">
-          <MetricCell
-            label="RECOMMEND"
-            value={`${overallStats.recommended}%`}
-          />
-          <MetricCell label="SOUND" value={overallStats.breakdown.sound} />
-          <MetricCell label="COMFORT" value={overallStats.breakdown.comfort} />
-          <MetricCell label="BUILD" value={overallStats.breakdown.build} />
-          <MetricCell label="VALUE" value={overallStats.breakdown.value} />
-        </div>
+      {/* ADD COMMENT */}
+      <div className="mt-10 flex gap-3">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Share your thoughts..."
+          className="flex-1 px-4 py-3 rounded-lg border text-sm"
+        />
+
+        <button
+          onClick={handleAddComment}
+          className="px-6 py-3 rounded-lg text-white font-medium hover:scale-105 transition"
+          style={{
+            background: `linear-gradient(to right, ${PRIMARY}, ${SECONDARY})`,
+            fontFamily: "Poppins",
+          }}
+        >
+          Add Comment
+        </button>
       </div>
     </section>
   );
