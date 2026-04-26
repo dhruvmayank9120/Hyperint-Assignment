@@ -6,7 +6,7 @@ A modern React-based product interface showcasing a premium headphone experience
 
 ## 🚀 Live Demo
 
-👉 *(Add your deployed link after Vercel deploy)*
+👉 *LIVE-LINK*
 https://hyperint-assignment-coral.vercel.app/
 
 ---
